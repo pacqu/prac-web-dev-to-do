@@ -5,6 +5,7 @@ app = Flask(__name__)
 app.secret_key = 't0-doN3'
 
 @app.route("/",methods=["GET","POST"])
+#See their item(s)
 def home():
     if session.get('token', None):
         return redirect('/list')
@@ -26,29 +27,59 @@ def home():
             #print post_data
         """
         login_res = requests.post('https://hunter-todo-api.herokuapp.com/auth', json=post_data)
-        r = s.post('https://hunter-todo-api.herokuapp.com/auth', json=post_data)
-        print r.text
         #print login_res.json()
         if 'error' in login_res.json():
             #print 'User does not exist'
             return render_template("home.html", message=login_res.json()['error'])
         session['token'] = login_res.json()['token']
-        print session.get('token', None)
+        #print session.get('token', None)
         return redirect('/list')
         #print submit_type
         #r = requests.get('https://hunter-todo-api.herokuapp.com/user')
         #print r.text
     return render_template("home.html")
 
+#Create new item(s)
 @app.route("/list",methods=["GET","POST"])
 def list():
     if session.get('token', None):
+        if request.method == "POST":
+            new_task = request.form['new_task']
+            #print new_task
+            post_data = {'content':new_task}
+            new_task_res = requests.post('https://hunter-todo-api.herokuapp.com/todo-item', cookies={'sillyauth': session.get('token', None).encode('ascii','ignore')},json=post_data)
+            #print new_task_res.json()
         todo_res = requests.get('https://hunter-todo-api.herokuapp.com/todo-item', cookies={'sillyauth': session.get('token', None).encode('ascii','ignore')})
-        print todo_res.text
-        return render_template("list.html")
+        #print todo_res.json()
+        return render_template("list.html", todo=todo_res.json())
     else:
         return redirect('/')
 
+
+#Mark item(s) as done
+#TODO: Seperate routes for marking complete/incomplete to save time on first get
+@app.route('/done/<id>', methods=["GET"])
+def done(id):
+    if session.get('token', None):
+        task_res = requests.get('https://hunter-todo-api.herokuapp.com/todo-item/' + id, cookies={'sillyauth': session.get('token', None).encode('ascii','ignore')})
+        #print task_res.json()['completed']
+        post_data = {"completed": not(task_res.json()['completed'])}
+        #print post_data
+        put_data = requests.put('https://hunter-todo-api.herokuapp.com/todo-item/' + id, cookies={'sillyauth': session.get('token', None).encode('ascii','ignore')},json=post_data)
+        #print put_data.json()
+        return redirect('/list')
+    else:
+        return redirect('/')
+
+#Delete item(s) altogether
+@app.route('/delete/<id>', methods=["GET"])
+def delete(id):
+    if session.get('token', None):
+        delete_data = requests.delete('https://hunter-todo-api.herokuapp.com/todo-item/' + id, cookies={'sillyauth': session.get('token', None).encode('ascii','ignore')})
+        #print delete_data.text
+        return redirect('/list')
+    else:
+        return('/')
 @app.route("/logout",methods=["GET","POST"])
 def logout():
     if session.get('token', None):
