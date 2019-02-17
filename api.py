@@ -1,4 +1,4 @@
-import requests, jinja2
+import requests, jinja2, os
 from flask import Flask, redirect, render_template, request, url_for, session
 
 app = Flask(__name__)
@@ -99,5 +99,7 @@ def logout():
     return redirect('/')
 
 if __name__ == '__main__':
-    app.debug = True
-    app.run(host='localhost',port=5000)
+    #app.debug = True
+    #app.run(host='localhost',port=5000)
+    port = int(os.environ.get("PORT", 5000))
+	app.run(host="0.0.0.0", port=port, threaded=True)
