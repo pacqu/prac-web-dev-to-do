@@ -1,4 +1,4 @@
-import requests, jinja2, os
+import requests, Jinja2, os
 from flask import Flask, redirect, render_template, request, url_for, session
 
 app = Flask(__name__)
