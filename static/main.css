@@ -1,0 +1,35 @@
+.App {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.Container {
+  min-height: 90vh;
+  max-height: 90vh;
+  min-width: 80vw;
+  max-width: 80vw;
+  border-radius: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+td, tr {
+  width: 200px;
+  text-align: center;
+  padding-bottom:10px;
+}
+
+form{
+  text-align: center;
+}
+
+input{
+  margin-top:10px;
+  margin-bottom:10px;
+}

@@ -1,23 +1,51 @@
-<html>
+<html lang="en" style="height:100%;">
 <head>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/css/bootstrap.min.css" integrity="sha384-PDle/QlgIONtM1aqA2Qemk5gPOE7wFq8+Em+G/hmo5Iq0CCmYZLv3fVRDJ4MMwEA" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ url_for('static',filename='main.css') }}">
 </head>
 <body>
-  <ul>
-    {%for task in todo%}
-    <li>{{ task['content'] }}
-      - {{ task['completed'] }} <a class="button button-primary" href="/done/{{task['id']}}">Complete</a>
-      - {{task['deleted']}} <a class="button button-primary" href="/delete/{{task['id']}}">Delete</a>
-    </li>
-    {%endfor%}
-  </ul>
-  <form method="POST">
-    <input name="new_task" type="text" placeholder="Do Laundry">
-    <input type="submit" name="submit" value="New Task">
-  </form>
-  <a class="button button-primary" href="/logout">Log-Out</a>
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js" integrity="sha384-7aThvCh9TypR7fIc2HV4O/nFMVCBwyIUKL8XCtKE+8xgCgl/PQGuFsvShjr74PBp" crossorigin="anonymous"></script>
+  <div class="App">
+    <div class="Container">
+      <h1> To-Do List </h1>
+      <table>
+        <tr>
+          <th>Done?</th>
+          <th>Task</th>
+          <th></th>
+        </tr>
+        {%for task in todo%}
+        <tr>
+          <td>
+            {%if task['completed']%}
+            X
+            {% endif %}
+          </td>
+          <td>
+            {{ task['content'] }}
+          </td>
+          <td>
+            {%if task['completed']%}
+            <a class="button button-primary" href="/undone/{{task['id']}}">Unmark as Done</a>
+            {%else%}
+            <a class="button button-primary" href="/done/{{task['id']}}">Mark as Done</a>
+            {% endif %}
+            <br>
+            <a class="button button-primary" href="/delete/{{task['id']}}">Delete</a>
+          </td>
+        </tr>
+        {%endfor%}
+      </table>
+      <br>
+      <h3> Add a Task To-Do </h3>
+      <form method="POST">
+        <input name="new_task" type="text" placeholder="Do Laundry">
+        <input type="submit" name="submit" value="New Task">
+      </form>
+      <a class="button button-primary" href="/logout">Log-Out</a>
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js" integrity="sha384-7aThvCh9TypR7fIc2HV4O/nFMVCBwyIUKL8XCtKE+8xgCgl/PQGuFsvShjr74PBp" crossorigin="anonymous"></script>
+    </div>
+  </div>
 </body>
 </html
