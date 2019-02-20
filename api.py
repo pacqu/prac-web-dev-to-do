@@ -10,27 +10,26 @@ app.secret_key = 't0-doN3'
 def home():
     if session.get('token', None):
         return redirect('/list')
+
     if request.method == "POST":
         submit_type = request.form['submit']
         username = request.form['username']
-        #print username
         post_data = {'username':username}
         if (submit_type == 'register'):
             register_res = requests.post('https://hunter-todo-api.herokuapp.com/user', json=post_data)
-            #print register_res.text
             if 'error' in register_res.json():
                 return render_template("home.html", message=register_res.json()['error'])
         login_res = requests.post('https://hunter-todo-api.herokuapp.com/auth', json=post_data)
-        #print login_res.json()
-        if 'error' in login_res.json():
+        if 'error' in login_res.json() or 'token' not in login_res.json():
             #print 'User does not exist'
-            return render_template("home.html", message=login_res.json()['error'])
+            if 'error' in login_res.json():
+                return render_template("home.html", message=login_res.json()['error'])
+            else:
+                return render_template("home.html", message="An unexpected error has occured.")
         session['token'] = login_res.json()['token']
-        #print session.get('token', None)
+        session['username'] = username
         return redirect('/list')
-        #print submit_type
-        #r = requests.get('https://hunter-todo-api.herokuapp.com/user')
-        #print r.text
+
     return render_template("home.html")
 
 #See their item(s)
@@ -46,7 +45,7 @@ def list():
             #print new_task_res.json()
         todo_res = requests.get('https://hunter-todo-api.herokuapp.com/todo-item', cookies={'sillyauth': session.get('token', None).encode('ascii','ignore')})
         #print todo_res.json()
-        return render_template("list.html", todo=todo_res.json())
+        return render_template("list.html", todo=todo_res.json(), username=session.get('username', None))
     else:
         return redirect('/')
 
@@ -96,6 +95,7 @@ def delete(id):
 def logout():
     if session.get('token', None):
         session.pop('token', None)
+        session.pop('username', None)
     return redirect('/')
 
 if __name__ == '__main__':
