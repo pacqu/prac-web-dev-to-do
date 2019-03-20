@@ -10,6 +10,7 @@ class App extends Component {
   constructor(){
     super();
     this.state = {
+      loggingIn: false,
       loggedIn: false,
       toDoList: []
     };
@@ -25,48 +26,50 @@ class App extends Component {
   handleSubmitRegisterInfo(){
     /* To-Do: Give user feedback that login is being attempted */
     let username = this.refs.username_entry.value;
+    this.setState({loggingIn: true});
     axios.post('https://hunter-todo-api.herokuapp.com/user', { username: username})
     .then(res => {
       axios.post('https://hunter-todo-api.herokuapp.com/auth', { username: username})
       .then(res => {
-        this.refs.username_entry.value = "";
+        //this.refs.username_entry.value = "";
         if (res.data.token){
           Cookies.set('token', res.data.token);
           Cookies.set('username', username);
-          this.setState({loggedIn: true, message: ""});
+          this.setState({loggingIn: true, loggedIn: true, message: ""});
           this.getToDoList();
         }
         console.log(res);
       })
       .catch(err => {
-        this.refs.username_entry.value = "";
-        this.setState({message: "Login Failed! User doesn't exist"})
+        //this.refs.username_entry.value = "";
+        this.setState({loggingIn: false, message: "Login Failed! User doesn't exist"})
         console.log(err);
       })
     })
     .catch(err => {
-      this.refs.username_entry.value = "";
-      this.setState({message: "Registration Failed! User already exists"});
+      //this.refs.username_entry.value = "";
+      this.setState({loggingIn: false, message: "Registration Failed! User already exists"});
     })
   }
 
   handleSubmitLoginInfo(){
     /* To-Do: Give user feedback that login is being attempted */
     let username = this.refs.username_entry.value;
+    this.setState({loggingIn: true});
     axios.post('https://hunter-todo-api.herokuapp.com/auth', { username: username})
     .then(res => {
-      this.refs.username_entry.value = "";
+      //this.refs.username_entry.value = "";
       if (res.data.token){
         Cookies.set('token', res.data.token);
         Cookies.set('username', username);
-        this.setState({loggedIn: true, message: ""});
+        this.setState({loggingIn: false, loggedIn: true, message: ""});
         this.getToDoList();
       }
       console.log(res);
     })
     .catch(err => {
-      this.refs.username_entry.value = "";
-      this.setState({message: "Login Failed! User doesn't exist"})
+      //this.refs.username_entry.value = "";
+      this.setState({loggingIn: false, message: "Login Failed! User doesn't exist"})
       console.log(err);
     })
   }
@@ -150,6 +153,9 @@ class App extends Component {
       {message}
     </div>);
     let logout;
+    if (this.state.loggingIn){
+      body = (<h2> Attempting to Log In... </h2>)
+    }
     if (this.state.loggedIn){
       let toDoList = this.state.toDoList;
       header = (<h1> {Cookies.get('username')}{"'s"} To-Do List</h1>);
